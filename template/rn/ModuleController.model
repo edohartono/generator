@@ -1,0 +1,52 @@
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
+import #module# from './#module#';
+import API from '../../../utils/API';
+
+class #module#Controller extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      refresh: false,
+      loading: true,
+    };
+  }
+  componentDidMount() {
+    this.getData();
+  }
+
+  getData() {
+    API.get('endpoint')
+      .then(response => {
+        this.setState({data: response, loading: false, refresh: false});
+      })
+      .catch(err => {
+        this.setState({loading: false, refresh: false});
+      });
+  }
+
+  onRefresh() {
+    this.setState(
+      {
+        refresh: true,
+      },
+      () => this.getData(),
+    );
+  }
+
+  render() {
+    return <#module# onRefresh={this.onRefresh.bind(this)} />;
+  }
+}
+
+const mapStateToProps = state => ({
+  ...state,
+});
+
+const mapDispatchToProps = {};
+
+export default connect(
+  mapStateToProps,
+  null,
+)(#module#Controller);

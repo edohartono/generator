@@ -1,0 +1,15 @@
+import React, {memo, useCallback, useState, useRef} from 'react';
+import {View, Text, Image, Colors, Button} from 'react-native-ui-lib';
+import {useNavigation} from '@react-navigation/core';
+import { w, h, fs } from '../../utils/Responsive';
+
+function #module#(controller) {
+  const navigation = useNavigation();
+  return (
+    <View>
+      <Text>#module#</Text>
+    </View>
+  );
+}
+
+export default #module#;

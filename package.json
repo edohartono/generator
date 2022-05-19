@@ -1,0 +1,25 @@
+{
+  "name": "@edose/generator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "minor": "npm version patch"
+  },
+  "bin": {
+    "generate": "./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/edohartono/generator.git"
+  },
+  "author": "Edo Setiawan <edosetiawan.me@gmail.com> (https://www.npmjs.com/~edosetia)",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "4.1.2",
+    "commander": "9.2.0",
+    "conf": "10.1.2",
+    "fs": "0.0.1-security"
+  }
+}
