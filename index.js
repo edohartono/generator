@@ -4,10 +4,7 @@ const { program } = require("commander");
 const generate = require("./commands/generate");
 const rn = require("./commands/rn");
 const react = require("./commands/react");
-program
-  .command("generate")
-  .description("List all the TODO tasks")
-  .action(generate);
+program.command("generate").description("Generate").action(generate);
 
 program
   .command("rn <task> <action>")

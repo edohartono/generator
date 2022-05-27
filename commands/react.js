@@ -6,6 +6,12 @@ function react(task, action) {
   const root = process.cwd();
   const directories = action.split("/");
   let prevDirectory = "";
+
+  // var testPath = root + "/templates";
+  // console.log(testPath);
+  // console.log(fs.existsSync(testPath));
+
+  // return;
   for (const directory of directories) {
     prevDirectory += `/${directory}`;
 
@@ -25,29 +31,32 @@ function react(task, action) {
     //create directory
     fs.mkdirSync(modulePath);
   }
+  var templatePath = root + "/templates";
+  var templateControllerDir = `${__dirname}/../template/react/ModuleController.model`;
+  var templateModelDir = `${__dirname}/../template/react/Module.model`;
+
+  if (fs.existsSync(`${templatePath}/ModuleController.model`)) {
+    templateControllerDir = `${templatePath}/ModuleController.model`;
+  }
+
+  if (fs.existsSync(`${templatePath}/Module.model`)) {
+    templateModelDir = `${templatePath}/Module.model`;
+  }
 
   //read template controller
-  fs.readFile(
-    `${__dirname}/../template/react/ModuleController.model`,
-    { encoding: "utf-8" },
-    (err, data) => {
-      var filtered = data;
-      filtered = filtered.replace(new RegExp(`\\#module#`, "gm"), task);
-      fs.writeFileSync(`${modulePath}/${task}Controller.js`, filtered);
-      console.log("Generating controller");
-    }
-  );
+  fs.readFile(templateControllerDir, { encoding: "utf-8" }, (err, data) => {
+    var filtered = data;
+    filtered = filtered.replace(new RegExp(`\\#module#`, "gm"), task);
+    fs.writeFileSync(`${modulePath}/${task}Controller.js`, filtered);
+    console.log("Generating controller");
+  });
 
-  fs.readFile(
-    `${__dirname}/../template/react/Module.model`,
-    { encoding: "utf-8" },
-    (err, data) => {
-      var filtered = data;
-      filtered = filtered.replace(new RegExp(`\\#module#`, "gm"), task);
+  fs.readFile(templateModelDir, { encoding: "utf-8" }, (err, data) => {
+    var filtered = data;
+    filtered = filtered.replace(new RegExp(`\\#module#`, "gm"), task);
 
-      fs.writeFileSync(`${modulePath}/${task}.jsx`, filtered);
-      console.log("Generating view");
-    }
-  );
+    fs.writeFileSync(`${modulePath}/${task}.jsx`, filtered);
+    console.log("Generating view");
+  });
 }
 module.exports = react;
