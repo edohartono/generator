@@ -1,11 +1,15 @@
 const conf = new (require("conf"))();
 const chalk = require("chalk");
 const fs = require("fs");
-function react(task, action) {
+function react(task, action, dir) {
   const actions = task.split(" ");
   const root = process.cwd();
   const directories = action.split("/");
   let prevDirectory = "";
+
+  if (task === "service") {
+    return generateService(action, dir);
+  }
 
   // var testPath = root + "/templates";
   // console.log(testPath);
@@ -58,5 +62,22 @@ function react(task, action) {
     fs.writeFileSync(`${modulePath}/${task}.jsx`, filtered);
     console.log("Generating view");
   });
+}
+
+function generateService(action, directory) {
+  console.log("Generate service...");
+  const servicePath = `${__dirname}/../template/rn/${action}.model`;
+
+  if (!fs.existsSync(servicePath)) {
+    console.log(chalk.yellow(`Service ${action} doesnt exists`));
+    return;
+  }
+
+  if (!fs.existsSync(`${process.cwd()}/${directory}`)) {
+    console.log(chalk.yellow(`Directory ${directory} doesnt exists`));
+    return;
+  }
+
+  fs.copyFileSync(servicePath, `${process.cwd()}/${directory}/${action}.js`);
 }
 module.exports = react;

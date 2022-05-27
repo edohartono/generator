@@ -7,12 +7,12 @@ const react = require("./commands/react");
 program.command("generate").description("Generate").action(generate);
 
 program
-  .command("rn <task> <action>")
+  .command("rn <task> <action> [dir]")
   .description("Generate react native")
   .action(rn);
 
 program
-  .command("react <task> <action>")
+  .command("react <task> <action> [dir]")
   .description("Generate react")
   .action(react);
 

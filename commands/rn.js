@@ -1,10 +1,14 @@
 const conf = new (require("conf"))();
 const chalk = require("chalk");
 const fs = require("fs");
-function rn(task, action) {
-  const actions = task.split(" ");
+function rn(task, action, dir) {
   const root = process.cwd();
   const directories = action.split("/");
+
+  if (task === "service") {
+    return generateService(action, dir);
+  }
+
   let prevDirectory = "";
   for (const directory of directories) {
     prevDirectory += `/${directory}`;
@@ -49,5 +53,22 @@ function rn(task, action) {
       console.log("Generating view");
     }
   );
+}
+
+function generateService(action, directory) {
+  console.log("Generate service...");
+  const servicePath = `${__dirname}/../template/rn/${action}.model`;
+
+  if (!fs.existsSync(servicePath)) {
+    console.log(chalk.yellow(`Service ${action} doesnt exists`));
+    return;
+  }
+
+  if (!fs.existsSync(`${process.cwd()}/${directory}`)) {
+    console.log(chalk.yellow(`Directory ${directory} doesnt exists`));
+    return;
+  }
+
+  fs.copyFileSync(servicePath, `${process.cwd()}/${directory}/${action}.js`);
 }
 module.exports = rn;

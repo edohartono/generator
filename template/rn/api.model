@@ -1,0 +1,229 @@
+import axios from "axios";
+import { Store } from "../../Store";
+import Toast from "react-native-toast-message";
+import { BASE_URL } from "../../config";
+import { DeviceEventEmitter } from "react-native";
+
+const API = {
+  get(path = "", params = {}, callback = null, showToastTimeout = false) {
+    return new Promise(async (resolve, reject) => {
+      const timeout = setTimeout(() => {
+        if (showToastTimeout) {
+          Toast.show({
+            text1: "Request Timeout",
+            type: "error",
+            autoHide: false,
+          });
+        }
+        return reject({
+          success: false,
+          status: 408,
+          error: "Request timeout",
+        });
+      }, 5000);
+      let STATE = Store.getState();
+      let headers = {};
+      path = `${BASE_URL}/${path}`;
+      headers["Content-Type"] = "application/json";
+      if (STATE.auth.token) headers["Authorization"] = STATE.auth.token;
+      axios
+        .get(path, {
+          headers: headers,
+          params: params,
+        })
+        .then((res) => {
+          clearTimeout(timeout);
+          let resultObj = res.data.data;
+
+          if (callback instanceof Function) {
+            return callback({
+              success: true,
+              result: resultObj,
+            });
+          } else {
+            resolve({
+              success: true,
+              result: resultObj,
+            });
+          }
+        })
+        .catch((err) => {
+          clearTimeout(timeout);
+
+          if (err.response.status == 500 || err.response.status == 502) {
+            Toast.show({
+              type: "error",
+              position: "top",
+              text1: "Kesalahan Server",
+              text2:
+                "Terjadi kesalahan pada server. Silahkan coba beberapa saat lagi",
+              visibilityTime: 10000,
+            });
+          }
+
+          if (err.response.status === 401) {
+            DeviceEventEmitter.emit("do_logout");
+          }
+          if (callback instanceof Function) {
+            return callback({
+              success: false,
+              error: err.response.data || "",
+              status: err.response.status,
+              response: err.response,
+            });
+          } else {
+            return reject({
+              success: false,
+              status: err.response.status,
+              error: err.response.data || "",
+              response: err.response,
+            });
+          }
+        });
+    });
+  },
+
+  async post(path = "", body = {}, callback = null, showToastTimeout) {
+    return new Promise(async (resolve, reject) => {
+      let STATE = Store.getState();
+      let headers = {};
+
+      const timeout = setTimeout(() => {
+        if (showToastTimeout) {
+          Toast.show({
+            text1: "Request Timeout",
+            type: "error",
+            autoHide: false,
+          });
+        }
+        return reject({
+          success: false,
+          status: 408,
+          error: "Request timeout",
+        });
+      }, 20000);
+
+      path = `${BASE_URL}/${path}`;
+      headers["Content-Type"] = "application/json";
+      if (STATE.auth.token) headers["Authorization"] = STATE.auth.token;
+      return axios({
+        method: "POST",
+        url: path,
+        headers: headers,
+        data: body,
+      })
+        .then((res) => {
+          clearTimeout(timeout);
+          if (callback instanceof Function) {
+            return callback({
+              success: true,
+              result: res.data.data,
+            });
+          } else {
+            return resolve({
+              success: true,
+              result: res.data.data,
+            });
+          }
+        })
+        .catch((err) => {
+          clearTimeout(timeout);
+          let errorMessage = err.response.data;
+
+          if (err.response.status === 401) {
+            DeviceEventEmitter.emit("do_logout");
+          }
+          if (err.response.status == 500) {
+            Toast.show({
+              type: "error",
+              position: "top",
+              text1: "Kesalahan Server",
+              text2:
+                "Terjadi kesalahan pada server. Silahkan coba beberapa saat lagi",
+              visibilityTime: 10000,
+            });
+          }
+
+          if (callback instanceof Function) {
+            return callback({
+              success: false,
+              error: errorMessage,
+              response: err.response,
+            });
+          } else {
+            return reject({
+              success: false,
+              error: errorMessage,
+              response: err.response,
+            });
+          }
+        });
+    });
+  },
+  async patch(path = "", body = {}, callback = null, showToastTimeout) {
+    return new Promise(async (resolve, reject) => {
+      let STATE = Store.getState();
+      let headers = {};
+
+      const timeout = setTimeout(() => {
+        if (showToastTimeout) {
+          Toast.show({
+            text1: "Request Timeout",
+            type: "error",
+            autoHide: false,
+          });
+        }
+        return reject({
+          success: false,
+          status: 408,
+          error: "Request timeout",
+        });
+      }, 20000);
+
+      path = `${BASE_URL}/${path}`;
+      headers["Content-Type"] = "application/json";
+      if (STATE.auth.token) headers["Authorization"] = STATE.auth.token;
+
+      return axios({
+        method: "PATCH",
+        url: path,
+        headers: headers,
+        data: body,
+      })
+        .then((res) => {
+          clearTimeout(timeout);
+          if (callback instanceof Function) {
+            return callback({
+              success: true,
+              result: res.data,
+            });
+          } else {
+            return resolve({
+              success: true,
+              result: res.data,
+            });
+          }
+        })
+        .catch((err) => {
+          clearTimeout(timeout);
+
+          if (err.response.status === 401) {
+            DeviceEventEmitter.emit("do_logout");
+          }
+          if (callback instanceof Function) {
+            return callback({
+              success: false,
+              error: err.response.data,
+              response: err.response,
+            });
+          } else {
+            return reject({
+              success: false,
+              error: err.response.data,
+              response: err.response,
+            });
+          }
+        });
+    });
+  },
+};
