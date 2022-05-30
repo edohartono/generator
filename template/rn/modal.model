@@ -1,0 +1,111 @@
+import {View, Text} from 'react-native-ui-lib';
+import React, {memo, useCallback} from 'react';
+import propType from 'prop-types';
+import Modal, {ModalProps} from 'react-native-modal';
+import {useSelector} from 'react-redux';
+import {StyleSheet} from 'react-native';
+import {useIsFocused} from '@react-navigation/native';
+import {h, w} from '../../utils/Responsive';
+
+function ModalView({
+  children,
+  id,
+  animationInTiming,
+  animationOutTiming,
+  avoidKeyboard,
+  onRequestClose,
+  onConfirm,
+  swipeDirection,
+  type,
+}) {
+  const modalConfig = useSelector(state => ({
+    show: state.display.modal,
+    ...state.display.modalConfig,
+  }));
+
+  const isFocused = useIsFocused();
+
+  const {show, title, message} = modalConfig;
+
+  const isVisible = show === id && isFocused;
+  const closeModal = useCallback(() => onRequestClose());
+
+  const animationInConfig = {
+    bottomHalf: 'slideInUp',
+    default: 'zoomIn',
+  };
+
+  const animationOutConfig = {
+    bottomHalf: 'slideInDown',
+    default: 'zoomOut',
+  };
+
+  const swipeDirectionConfig = {
+    bottomHalf: ['down'],
+    default: [],
+  };
+  return (
+    <Modal
+      isVisible={isVisible}
+      animationIn={animationInConfig[type]}
+      animationOut={animationOutConfig[type]}
+      swipeDirection={swipeDirectionConfig[type]}
+      onBackButtonPress={closeModal}
+      onBackdropPress={closeModal}
+      onDismiss={closeModal}
+      onSwipeComplete={closeModal}
+      style={[s.modal, type === 'bottom' && s.modalBottomHalf]}>
+      <View
+        style={[
+          s.wrapper,
+          type === 'bottom' && s.wrapperBottomHalf,
+          type === 'default' && s.wrapperDefault,
+        ]}>
+        <Text text80R fSecondaryB>
+          Modal
+        </Text>
+      </View>
+    </Modal>
+  );
+}
+
+const s = StyleSheet.create({
+  modalDefault: {
+    width: w(90),
+  },
+  modalBottomHalf: {
+    justifyContent: 'flex-end',
+    margin: 0,
+  },
+
+  wrapperBottomHalf: {
+    borderTopRightRadius: 12,
+    borderTopLeftRadius: 12,
+    width: w(100),
+    height: h(60),
+  },
+
+  wrapperDefault: {
+    width: w(90),
+  },
+
+  wrapper: {
+    backgroundColor: 'white',
+  },
+});
+
+ModalView.defaultProps = {
+  animationInTiming: 300,
+  animationOutTiming: 300,
+  avoidKeyboard: false,
+  type: 'default',
+  title: null,
+};
+
+ModalView.propTypes = {
+  animationInTiming: propType.number,
+  animationOutTiming: propType.number,
+  id: propType.string.isRequired,
+};
+
+export default memo(ModalView);
